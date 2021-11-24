@@ -35,18 +35,15 @@ volScalarField p
 );
 
 Info<< "Reading field p_rgh\n" << endl;
-volScalarField p_rgh
-(
-    IOobject
-    (
+volScalarField p_rgh(
+    IOobject(
         "p_rgh",
         runTime.timeName(),
         mesh,
         IOobject::MUST_READ,
-        IOobject::AUTO_WRITE
+        args.optionFound("noWritePrgh") ? IOobject::NO_WRITE : IOobject::AUTO_WRITE
     ),
-    mesh
-);
+    mesh);
 
 Info<< "Reading field T\n" << endl;
 volScalarField T

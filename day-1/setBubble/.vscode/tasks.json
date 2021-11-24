@@ -6,7 +6,7 @@
         {
             "label": "wmake-build",
             "type": "shell",
-            "command": "wmake && ${env:FOAM_USER_APPBIN}/${fileBasenameNoExtension}",
+            "command": "wmake && ${env:FOAM_USER_APPBIN}/${fileBasenameNoExtension} -case ../depthCharge2D",
             "problemMatcher": [],
             "group": {
                 "kind": "build",

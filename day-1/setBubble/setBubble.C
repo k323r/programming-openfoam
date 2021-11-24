@@ -45,6 +45,12 @@ int main(int argc, char *argv[])
     #include "setRootCase.H"    // deals with the command line arguments and provides generic help functionality
                                 // creates an openfoam Foam::argList object args
 
+    // let's add an argument to switch of initialization of p_rgh
+    argList::addBoolOption(
+        "noWritePrgh",
+        "do not initialise p_rgh"
+    );
+
     #include "createTime.H"     // deals with all time related things but also writing stuff out
                                 // creates an openfoam Foam::Time object runTime
 
@@ -61,7 +67,10 @@ int main(int argc, char *argv[])
     // create a dimensioned scalar from the p.dimensions() and pL and assign it to p
     // same goes for T
     p = dimensioned<scalar>("pL", p.dimensions(), pL);
-    T = dimensioned<scalar>("TL", T.dimensions(), TL);    
+    T = dimensioned<scalar>("TL", T.dimensions(), TL);
+    
+    p_rgh == p;    // use the == operator to make sure, the values are also set on the boundary faces
+                   // this is because fixedValue boundary conditions do not implement a = operator
 
     forAll(meshCellCentres, celli){
 
@@ -94,9 +103,6 @@ int main(int argc, char *argv[])
         if ( Ci.y() > freeSurfaceHeight ) {
             alpha[celli] = 0;       // air -> alpha = 0
         }
-
-
-
     }
 
     //alpha.write();

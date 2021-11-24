@@ -10,7 +10,7 @@
             "request": "launch",
             //"program": "${fileDirname}/${fileBasenameNoExtension}",
             "program": "${env:FOAM_USER_APPBIN}/${fileBasenameNoExtension}",
-            "args": [],
+            "args": ["-case", "../depthCharge2D"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
