@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "Test-vector.C": "cpp",
+        "foamSandbox.C": "cpp",
+        "vector": "cpp"
+    }
+}
