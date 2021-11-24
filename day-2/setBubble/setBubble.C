@@ -29,6 +29,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "fvCFD.H"
+//#include "DynamicList.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -42,15 +43,18 @@ int main(int argc, char *argv[])
         }
     }
 
-    #include "setRootCase.H"    // deals with the command line arguments and provides generic help functionality
-                                // creates an openfoam Foam::argList object args
-
     // let's add an argument to switch of initialization of p_rgh
     argList::addBoolOption(
         "noWritePrgh",
-        "do not initialise p_rgh"
-    );
+        "do not initialise p_rgh");
 
+    argList::addBoolOption(
+        "correctPressureTemperature",
+        "Correct pressure and temperature in the bubble assuming isentropic expansion");
+
+    #include "setRootCase.H"    // deals with the command line arguments and provides generic help functionality
+                                // creates an openfoam Foam::argList object args
+                                
     #include "createTime.H"     // deals with all time related things but also writing stuff out
                                 // creates an openfoam Foam::Time object runTime
 
@@ -63,6 +67,7 @@ int main(int argc, char *argv[])
     // From the documentation: https://cpp.openfoam.org/v9/classFoam_1_1fvMesh.html#a0fbf3f470cb51bdbb754bf72e736ae12
     // returns a reference to the mesh cell centres (not a pointer!)
     const volVectorField& meshCellCentres = mesh.C();
+    DynamicList<label> bubbleCells;     // used to store the bubble cell indices
 
     const DimensionedField<scalar, volMesh>& V = mesh.V();
     scalar bubbleVolume = 0.0;
@@ -81,20 +86,6 @@ int main(int argc, char *argv[])
         // centre and the bubble radius is smaller than the bubble radius, 
         // we are inside the bubble and we can set our fields
 
-        /*
-        if (mag(meshCellCentres[celli] - bubbleCentre) < bubbleRadius) {
-            alpha[celli] = 0;
-            p[celli] = pBubble;
-            T[celli] = TBubble;
-        }
-
-        if (meshCellCentres[celli].y() > freeSurfaceHeight) {
-            alpha[celli] = 0;
-        }
-        */
-
-        // more elegant iteration
-        // first create a reference to the current cell
         const vector& Ci = meshCellCentres[celli];
                 // inside the bubble?
         if ( mag(Ci - centre) < radius) {
@@ -103,6 +94,8 @@ int main(int argc, char *argv[])
             p[celli] = pB;     // set bubble pressure
 
             bubbleVolume += V[celli];    // if run in parallel this will be done on each processor!
+
+            bubbleCells.append(celli);
         }
         
         if ( Ci.y() > freeSurfaceHeight ) {
@@ -167,9 +160,17 @@ int main(int argc, char *argv[])
     pB *= Foam::pow(bubbleRatio, gamma);
     TB *= Foam::pow(bubbleRatio, (gamma - 1));
 
-    // Info << "Domain volume: " << gSum(V) << endl;
+    if (args.optionFound("correctPressureTemperature")) {
+        Info << "Correcting pressure and Temperature inside the bubble by assuming isentropic expansion" << endl;
+        forAll(bubbleCells, i)
+        {
+            const label &celli = bubbleCells[i]; // get the index as a reference
+            p[celli] = pB;
+            T[celli] = TB;
+        }
+        Info << "Done!" << endl;
+    }
 
-    //alpha.write();
     runTime.writeNow();
 
     Info<< nl << "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
