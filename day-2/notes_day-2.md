@@ -1,6 +1,6 @@
 # notes from "programming openfoam" - day 2
 
-- dictionary lookups can be dimensioned as well by supplying a dimensions keyword. 
+- dictionary lookups can be dimensioned as well by supplying a dimensions keyword.
 - dimensioned lookups are also possible, look e.g. at `createFields.H` from the `icoFoam` directory.
 - assigning values to a field: boundary faces with a fixedValue will not be overwritten. However, there is an operator `==` available that overrides this: `p_rgh == p`.
 - best practice: if you are not sure how to implement stuff, find a suitable example already implemented in openfoam and copy the parts of the code that implement the feature you want. Compile as early and as often as possible.
@@ -17,4 +17,6 @@
 ## Boundary conditions
 
 - generally stored under `$FOAM_SRC/finiteVolume/fields/fvPatchFields`
-- whats `cyclicSlip`?
+- what is the `cyclicSlip` boundary condition
+- a boundary condition that is applicable to all types (scalar, vector, tensor) consists of 5 files. The most important one however are the *Field.(C|H). The Field**s** files are used to build the boundary conditions for all the other available types.
+- the boundary conditions are implemented as templates. 

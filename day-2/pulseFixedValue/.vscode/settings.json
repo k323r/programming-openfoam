@@ -4,6 +4,8 @@
         "foamSandbox.C": "cpp",
         "vector": "cpp",
         "fibonacci.C": "cpp",
-        "setBubble.C": "cpp"
+        "setBubble.C": "cpp",
+        "pulseFixedValueFvPatchField.C": "cpp",
+        "pulseFixedValueFvPatchFields.C": "cpp"
     }
 }
