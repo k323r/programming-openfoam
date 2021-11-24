@@ -1,3 +1,13 @@
+# Day 1 of programming OpenFOAM
+
+## tools
+
+- `wmakeFilesAndOptions` creates a `Make` folder for compiling OpenFOAM projects.
+- `foamNewApp` creates a setup for a new application ready to be compiled with `wmake`
+
+## structure of a typical OpenFOAM applications
+
+```C++
 /*---------------------------------------------------------------------------*\
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
@@ -54,52 +64,7 @@ int main(int argc, char *argv[])
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-    // From the documentation: https://cpp.openfoam.org/v9/classFoam_1_1fvMesh.html#a0fbf3f470cb51bdbb754bf72e736ae12
-    // returns a reference to the mesh cell centres (not a pointer!)
-    const volVectorField& meshCellCentres = mesh.C();
-
-    // create a dimensioned scalar from the p.dimensions() and pL and assign it to p
-    // same goes for T
-    p = dimensioned<scalar>("pL", p.dimensions(), pL);
-    T = dimensioned<scalar>("TL", T.dimensions(), TL);    
-
-    forAll(meshCellCentres, celli){
-
-        // iterate over all cell centres and if the distance between the cell
-        // centre and the bubble radius is smaller than the bubble radius, 
-        // we are inside the bubble and we can set our fields
-
-        /*
-        if (mag(meshCellCentres[celli] - bubbleCentre) < bubbleRadius) {
-            alpha[celli] = 0;
-            p[celli] = pBubble;
-            T[celli] = TBubble;
-        }
-
-        if (meshCellCentres[celli].y() > freeSurfaceHeight) {
-            alpha[celli] = 0;
-        }
-        */
-
-        // more elegant iteration
-        // first create a reference to the current cell
-        const vector& Ci = meshCellCentres[celli];
-                // inside the bubble?
-        if ( mag(Ci - centre) < radius) {
-            alpha[celli] = 0;       // air -> alpha = 0
-            T[celli] = TB;     // set bubble temperature
-            p[celli] = pB;     // set bubble pressure
-        }
-        
-        if ( Ci.y() > freeSurfaceHeight ) {
-            alpha[celli] = 0;       // air -> alpha = 0
-        }
-
-
-
-    }
-
-    //alpha.write();
+    // writes all fields
     runTime.writeNow();
 
     Info<< nl << "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
@@ -113,3 +78,4 @@ int main(int argc, char *argv[])
 
 
 // ************************************************************************* //
+```
