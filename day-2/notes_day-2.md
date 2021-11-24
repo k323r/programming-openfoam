@@ -8,3 +8,13 @@
 - also a cool tool `setFields` to initialize fields in the 0 folder.
 - `foamGet decomposeParDict` searches and copies a given dict. Tripple-TAB to see all available dicts (and options)
 - `Foam::constant::thermodynamic` and `Foam::constant::mathematical` includes a couple of useful global variables for physical computations
+- How are the model loaded into the different applications? they are selected in the dictionary and then need to be dynamically selected at run time...
+  - each model exposes itself into a hash table by calling `addToRunTimeSelectionTable`
+  - a pointer pointing to a turbulence model is created. Upon the create of the pointer, a selector function is called (`New()`) that actually looks up the model and loads it from the has table.
+  - there is a generic interface for models, called `fvModels` e.g. for momentum sources.
+  - each turbulence model has it's own correct function that actually executes the turbulence model. How can we implement the same function over and over again? you create a base class with a **virtual function** `correct`. And each derived class (aka turbulence model) then implements the `correct` function.
+
+## Boundary conditions
+
+- generally stored under `$FOAM_SRC/finiteVolume/fields/fvPatchFields`
+- whats `cyclicSlip`?
