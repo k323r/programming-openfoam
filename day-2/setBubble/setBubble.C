@@ -115,14 +115,59 @@ int main(int argc, char *argv[])
     reduce(bubbleVolume, sumOp<scalar>());
 
     scalar commonFactor = Foam::constant::mathematical::pi * sqr(radius);
-    scalar theoreticalVolume = 4.0/3.0 * commonFactor * radius;
-    scalar depth = 0.2;
+    scalar bubbleRatio = commonFactor / bubbleVolume;
+    scalar depth = 0;
+    scalar theoreticalBubbleVolume = 0;
 
-    Info << "Bubble volume: " << bubbleVolume << endl;
-    Info << "Cylinder volume: " << depth * commonFactor << endl;
-    Info << "Theoretical bubble volume: " << theoreticalVolume << endl;
-    Info << "Bubble ratio: " << bubbleVolume / theoreticalVolume << endl;
-    Info << "Domain volume: " << gSum(V) << endl;
+    // from polyMesh.H: nSolutionD and solutionD containing the valid 
+    // directions and number of solved for dimensions in the mesh
+
+    switch (mesh.nSolutionD()) {
+
+        case 2: {
+            // get the depth of the domain
+
+            const vector emptyDirection (
+                0.5 * (Vector<label>::one - mesh.solutionD())
+            );
+
+            Info << "Unit vector in the direction empty direction: " << emptyDirection << endl;
+
+            depth = emptyDirection & mesh.bounds().span();
+
+            Info << "Depth of the domain: " << depth << endl;
+            
+            bubbleRatio *= depth;
+
+            theoreticalBubbleVolume = commonFactor * depth;
+
+            break;
+        }
+
+        case 3: {
+
+            theoreticalBubbleVolume = commonFactor * 4.0 / 3.0 * radius;
+
+            bubbleRatio *= 4.0 * radius / 3.0;
+            break;
+        }
+
+    }
+
+    Info << "Numerical bubble volume: " << bubbleVolume << endl;
+    Info << "Theoretical bubble volume: " << theoreticalBubbleVolume << endl;
+    Info << "Bubble ratio (numerical / theoretical): " << bubbleRatio << endl;
+    Info << "Error is approx: " << (1 - bubbleRatio) * 100 << endl;
+
+    // correcting pressure and tempereature by assuming a isentropic expansion
+    // and using the bubble ratio.
+    // effectively, the numerical bubble is larger than the theoretical one,
+    // hence, in the numerical model, the bubble is actually a bit expanded
+    scalar gamma = 1.4;
+    pB *= Foam::pow(bubbleRatio, gamma);
+    TB *= Foam::pow(bubbleRatio, (gamma - 1));
+
+    // Info << "Domain volume: " << gSum(V) << endl;
 
     //alpha.write();
     runTime.writeNow();
@@ -135,6 +180,7 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
 
 
 // ************************************************************************* //
