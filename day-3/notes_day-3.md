@@ -12,6 +12,10 @@
 - when implementing boundary conditions everything that is read in at the beginning of the simulation needs to be written out again to enable restarting the simulation.
 - this is a great way to debug your simulation: `grep -A 8 inlet 0.01/U` will e.g. print your the boundary condition dict into `0.01/U`.
 
+## Function1 boundary conditions
+
+- Function1 is a virtual function that helps to implement varying times. Can be specified at run time.
+
 ## building a solver
 
 - `icoFoam` is still available in openfoam as an example. In the next example we are going to add porous media to icoFoam.
