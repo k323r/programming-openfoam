@@ -100,7 +100,18 @@ bool Foam::functionObjects::energy::write()
     const volVectorField& U = obr_.lookupObject<volVectorField>(UName_);
     
     // we do not need to loop over all cells as OpenFOAM can do field algebra
-    const scalar KE = 0.5 * rho_ * fvc::domainIntegrate(magSqr(U)).value();
+    scalar KE = 0.0; 
+
+    // for a compressible simulation we need to retrieve rho from the object registry
+    if (obr_.foundObject<volScalarField>("rho"))
+    {
+        const volScalarField& rho = obr_.lookupObject<volScalarField>("rho");
+        KE = 0.5 * fvc::domainIntegrate(rho * magSqr(U)).value();
+    }
+    else
+    {
+        KE = 0.5 * rho_ * fvc::domainIntegrate(magSqr(U)).value();
+    }
 
     Info << "KE = " << KE << nl << endl;
 
