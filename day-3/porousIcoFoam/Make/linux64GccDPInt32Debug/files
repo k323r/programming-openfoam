@@ -1,0 +1,3 @@
+SOURCE += porousIcoFoam.C
+
+EXE = $(FOAM_APPBIN)/porousIcoFoam

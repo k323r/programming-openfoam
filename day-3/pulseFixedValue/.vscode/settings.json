@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "Test-vector.C": "cpp",
+        "foamSandbox.C": "cpp",
+        "vector": "cpp",
+        "fibonacci.C": "cpp",
+        "setBubble.C": "cpp",
+        "pulseFixedValueFvPatchField.C": "cpp",
+        "pulseFixedValueFvPatchFields.C": "cpp"
+    }
+}

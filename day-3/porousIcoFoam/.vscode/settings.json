@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "Test-vector.C": "cpp",
+        "foamSandbox.C": "cpp",
+        "vector": "cpp",
+        "fibonacci.C": "cpp",
+        "setBubble.C": "cpp",
+        "pulseFixedValueFvPatchField.C": "cpp",
+        "pulseFixedValueFvPatchFields.C": "cpp",
+        "porousIcoFoam.C": "cpp",
+        "*.tcc": "cpp",
+        "optional": "cpp",
+        "system_error": "cpp"
+    }
+}
